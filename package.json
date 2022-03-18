@@ -7,7 +7,7 @@
     "test": "jest",
     "watch": "webpack --watch",
     "start-wds": "webpack serve --open",
-    "build" : "webpack"
+    "build": "webpack"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,7 @@
     "css-loader": "^6.7.1",
     "eslint": "^8.11.0",
     "eslint-config-prettier": "^8.5.0",
+    "jest": "^27.5.1",
     "prettier": "2.5.1",
     "style-loader": "^3.3.1",
     "webpack-dev-server": "^4.7.4"
