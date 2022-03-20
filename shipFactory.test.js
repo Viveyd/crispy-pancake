@@ -67,21 +67,29 @@ describe("status property", () => {
     ).toBe(true));
 });
 
-describe("workingParts property", () => {
-  it("workingParts property defined", () =>
-    expect(Ship("battleship").workingParts).toBeDefined());
-  it("workingParts property is an array", () =>
-    expect(Array.isArray(Ship("battleship").workingParts)).toBe(true));
-  it("workingParts length is equals to length property", () =>
+describe("parts property", () => {
+  it("parts property defined", () =>
+    expect(Ship("battleship").parts).toBeDefined());
+  it("parts property is an array", () =>
+    expect(Array.isArray(Ship("battleship").parts)).toBe(true));
+  it("parts length is equals to length property", () =>
+    expect(Ship("battleship").parts.length === Ship("battleship").length).toBe(
+      true
+    ));
+  it("parts items are all non-array objects", () =>
     expect(
-      Ship("battleship").workingParts.length === Ship("battleship").length
-    ).toBe(true));
-  it("workingParts items are all boolean", () =>
-    expect(
-      Ship("battleship").workingParts.every(
-        (part) => part === true || part === false
+      Ship("battleship").parts.every(
+        (part) => typeof part === "object" && Array.isArray(part) === false
       )
     ).toBe(true));
+  it("parts objects have coordinate property", () =>
+    expect(
+      Ship("battleship").parts.every((part) => "coordinates" in part)
+    ).toBe(true));
+  it("parts objects have status property", () =>
+    expect(Ship("battleship").parts.every((part) => "status" in part)).toBe(
+      true
+    ));
 });
 describe("hit method", () => {
   it("hit defined", () => expect(Ship("battleship").hit).toBeDefined());
@@ -95,15 +103,15 @@ describe("hit method", () => {
   it("hit returns error if given num argument exceed ship length", () => {
     expect(() => Ship("battleship").hit("6")).toThrow("Invalid target");
   });
-  it("hit affects workingParts if given valid target ()", () => {
+  it("hit affects parts if given valid target ()", () => {
     const sampleShip = Ship("battleship");
     sampleShip.hit(2);
-    expect(sampleShip.workingParts[2]).toBe(false);
+    expect(sampleShip.parts[2].status).toBe("inactive");
   });
   it("hit throws error if target was already hit", () => {
     const sampleShip = Ship("battleship");
     sampleShip.hit(2);
-    expect(() => sampleShip.hit(2)).toThrow();
+    expect(() => sampleShip.hit(2)).toThrow("Already destroyed!");
   });
 });
 
@@ -116,13 +124,18 @@ describe("isSunk method", () => {
       Ship("battleship").isSunk() === true ||
         Ship("battleship").isSunk() === false
     ).toBe(true));
-  it("isSunk returns true if all workingParts item === false otherwise false", () => {
-    const expected = Ship("battleship").workingParts.every(
-      (parts) => parts === false
+  it("isSunk returns true if all parts item === false otherwise false", () => {
+    const sampleShip = Ship("battleship");
+    sampleShip.hit(0);
+    sampleShip.hit(1);
+    sampleShip.hit(2);
+    sampleShip.hit(3);
+    const expected = sampleShip.parts.every(
+      (parts) => parts.status === "inactive"
     )
       ? true
       : false;
-    expect(Ship("battleship").isSunk()).toBe(expected);
+    expect(sampleShip.isSunk()).toBe(expected);
   });
 });
 
@@ -141,8 +154,28 @@ describe("Sample objects", () => {
     it("status property is equals to 'active'", () => {
       expect(sampleObj.status).toBe("active");
     });
-    it("workingParts property is equals to [true,true,true]", () => {
-      expect(sampleObj.workingParts).toStrictEqual([true, true, true]);
+    it("parts.status is equals to 'active'", () => {
+      expect(sampleObj.parts.every((part) => part.status === "active")).toBe(
+        true
+      );
+    });
+    it("parts.coordinates is equal to an empty string", () => {
+      expect(sampleObj.parts.every((part) => part.coordinates === "")).toBe(
+        true
+      );
+    });
+    it("hit method modifies target part.status to 'inactive'", () => {
+      const sampleShip = Ship("battleship");
+      sampleShip.hit(3);
+      expect(sampleShip.parts[3].status).toBe("inactive");
+    });
+    it("isSunk method returns true after all parts are hit()", () => {
+      const sampleShip = Ship("battleship");
+      sampleShip.hit(0);
+      sampleShip.hit(1);
+      sampleShip.hit(2);
+      sampleShip.hit(3);
+      expect(sampleShip.isSunk()).toBe(true);
     });
   });
 });

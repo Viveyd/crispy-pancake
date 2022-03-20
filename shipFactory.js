@@ -18,26 +18,28 @@ module.exports = function Ship(shipClass) {
     class: shipClass,
     length: computedLength || 5,
     status: "active",
-    workingParts: computedParts, // parts. array containing part objects with (state and coordinate)
+    parts: computedParts, // parts. array containing part objects with (state and coordinate)
     hit(targetIdx) {
       if (isNaN(targetIdx)) throw Error("Expected a number arg (hit)");
       else if (targetIdx >= 0 && targetIdx >= this.length)
         throw Error("Invalid target");
-      else if (this.workingParts[targetIdx] == false)
-        throw Error("Invalid target");
+      else if (this.parts[targetIdx].status === "inactive")
+        throw Error("Already destroyed!");
       else {
-        this.workingParts[targetIdx] = false;
+        this.parts[targetIdx].status = "inactive";
       }
     },
     isSunk() {
-      return this.workingParts.every((parts) => parts === false) ? true : false;
+      return this.parts.every((part) => part.status === "inactive")
+        ? true
+        : false;
     },
   };
 
   function computeParts(computedLength) {
     const computedParts = [];
     for (let i = computedLength; i !== 0; i -= 1) {
-      computedParts.push(true);
+      computedParts.push({ status: "active", coordinates: "" });
     }
     return computedParts;
   }
