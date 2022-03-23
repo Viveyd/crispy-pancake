@@ -25,19 +25,27 @@ describe("Check Gameboard Factory", () => {
     it("Gameboard().placeShip is not an array", () => {
       expect(Array.isArray(Gameboard().placeShip)).toBe(false);
     });
-    it("Error if arguments.length is not 1", () => {
-      expect(() => Gameboard().placeShip()).toThrow(
-        "Expects a single argument"
+    it("Error if any coord does not follow format: '[a-j][1-10]' ", () => {
+      expect(() => Gameboard().placeShip(1)).toThrow("");
+    });
+    it("Missing 'ship' argument or using non object as first arg throws error", () => {
+      expect(() => Gameboard().placeShip("f3")).toThrow(
+        "Invalid target ship argument"
       );
     });
-    it("Error if arg does not follow format: '[a-j][1-10]' ", () => {
-      expect(() => Gameboard().placeShip(1)).toThrow("Invalid argument format");
+    it("Throw error if ship.length not equals to coords given", () => {
+      const gameboard = Gameboard();
+      expect(() =>
+        gameboard.placeShip(gameboard.ships[0], "a1", "a2", "a3")
+      ).toThrow("Unexpected number of arguments");
     });
-    it("placeShip('a10') does NOT throw error", () => {
-      expect(() => Gameboard().placeShip("a10")).not.toThrow();
-    });
-    it("placeShip('f3') does NOT throw error", () => {
-      expect(() => Gameboard().placeShip("f3")).not.toThrow();
+    it("Given valid args, placeShip method updates Ship.parts coordinates", () => {
+      const gameboard = Gameboard();
+      gameboard.placeShip(gameboard.ships[0], "a1", "a2", "a3", "a4");
+      expect(gameboard.ships[0].parts[0].coordinates).toBe("a1");
+      expect(gameboard.ships[0].parts[1].coordinates).toBe("a2");
+      expect(gameboard.ships[0].parts[2].coordinates).toBe("a3");
+      expect(gameboard.ships[0].parts[3].coordinates).toBe("a4");
     });
   });
   describe("Gameboard().receiveAttack method", () => {
@@ -50,6 +58,27 @@ describe("Check Gameboard Factory", () => {
     it("Gameboard().receiveAttack is not an array", () => {
       expect(Array.isArray(Gameboard().receiveAttack)).toBe(false);
     });
+    it("Throws error if given improperly-formatted coordinates", () => {
+      expect(() => Gameboard().receiveAttack("0")).toThrow();
+    });
+    it("Ship part status becomes inactive when hit", () => {
+      const gameboard = Gameboard();
+      gameboard.placeShip(gameboard.ships[1], "a1", "a2", "a3", "a4", "a5");
+      gameboard.receiveAttack("a1");
+      expect(gameboard.ships[1].parts[0].status).toBe("inactive");
+    });
+    it("Log attacks to activityLog array", () => {
+      const gameboard = Gameboard();
+      gameboard.placeShip(gameboard.ships[0], "a1", "a2", "a3", "a4");
+      gameboard.receiveAttack("a1");
+      expect(gameboard.activityLog[0]).toBeDefined();
+    });
+    it("Coordinates already in activity log cannot receive attack (error)", () => {
+      const gameboard = Gameboard();
+      gameboard.placeShip(gameboard.ships[0], "a1", "a2", "a3", "a4");
+      gameboard.receiveAttack("a1");
+      expect(() => gameboard.receiveAttack("a1")).toThrow();
+    });
   });
   describe("Gameboard().hasLost method", () => {
     it("Gameboard().hasLost is defined", () => {
@@ -58,15 +87,12 @@ describe("Check Gameboard Factory", () => {
     it("Gameboard().hasLost is a function", () => {
       expect(typeof Gameboard().hasLost).toBe("function");
     });
-    it("Gameboard().hasLost is not an array", () => {
-      expect(Array.isArray(Gameboard().hasLost)).toBe(false);
-    });
     it("Gameboard().hasLost returns a boolean value", () => {
       const returnVal = Gameboard().hasLost();
       expect(returnVal === true || returnVal === false).toBe(true);
     });
-    it("Gameboard().hasLost is not an array", () => {
-      expect(Array.isArray(Gameboard().hasLost)).toBe(false);
+    it("Returns false if ships array has active ships", () => {
+      expect(Gameboard().hasLost()).toBe(false);
     });
   });
   describe("Gameboard().ships property", () => {
