@@ -113,6 +113,14 @@ describe("hit method", () => {
     sampleShip.hit(2);
     expect(() => sampleShip.hit(2)).toThrow("Already destroyed!");
   });
+  it("If all parts of ship are hit change status to inactive", () => {
+    const sampleShip = Ship("battleship");
+    sampleShip.hit(0);
+    sampleShip.hit(1);
+    sampleShip.hit(2);
+    sampleShip.hit(3);
+    expect(sampleShip.status).toBe("inactive");
+  });
 });
 
 describe("isSunk method", () => {
@@ -176,6 +184,26 @@ describe("Sample objects", () => {
       sampleShip.hit(2);
       sampleShip.hit(3);
       expect(sampleShip.isSunk()).toBe(true);
+    });
+  });
+  describe("Ship('frigate')", () => {
+    const sampleObj = Ship("frigate");
+    it("type property is equals to 'ship'", () => {
+      expect(sampleObj.type).toBe("ship");
+    });
+    it("class property is equals to 'frigate'", () => {
+      expect(sampleObj.class).toBe("frigate");
+    });
+    it("length property is equals to 1", () => {
+      expect(sampleObj.length).toBe(1);
+    });
+    it("status property is equals to 'active'", () => {
+      expect(sampleObj.status).toBe("active");
+    });
+    it("parts.status is equals to 'active'", () => {
+      expect(sampleObj.parts.every((part) => part.status === "active")).toBe(
+        true
+      );
     });
   });
 });

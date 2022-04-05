@@ -27,6 +27,7 @@ module.exports = function Ship(shipClass) {
         throw Error("Already destroyed!");
       else {
         this.parts[targetIdx].status = "inactive";
+        if (this.isSunk() === true) this.status = "inactive";
       }
     },
     isSunk() {
