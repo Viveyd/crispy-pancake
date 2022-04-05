@@ -11,27 +11,30 @@ module.exports = function Gameboard() {
     activityLog: [],
     receiveAttack(coord) {
       // cross-reference given coordinate with each active ships's coordinates
-      const regex = /^[a-f][1-9]$|^[a-f]10$/g;
+      const regex = /^[a-j][1-9]$|^[a-j]10$/g;
       if (regex.test(coord) === false) {
         throw Error("Invalid coordinates");
       } else if (this.activityLog.includes(coord)) {
         throw Error("Coordinate has already been attacked earlier");
       } else {
-        // target ship part becomes inactive
         for (let i = 0; i < this.ships.length; i++) {
           // look for a ship with a part that matches the target coordinate
           const ship = this.ships[i];
           const matchIdx = ship.parts.findIndex(
             (part) => part.coordinates === coord
           );
-          // if no matches abort
-          if (matchIdx === -1) continue;
-          // if theres a match, call hit method of ship then exit from loop
-          ship.hit(matchIdx);
-          // updates activity log
-          this.activityLog.push(coord);
-          break;
+          // Call hit method if match found and set result then exit
+          if (matchIdx !== -1) {
+            ship.hit(matchIdx);
+            if (ship.status === "inactive") {
+              this.activityLog.push({ coord, result: "destroy" });
+            } else this.activityLog.push({ coord, result: "hit" });
+            return;
+          }
         }
+        //If no match found, still log attack on coord as a miss.
+        this.activityLog.push({ coord, result: "miss" });
+        return;
       }
     },
     hasLost() {
@@ -41,15 +44,15 @@ module.exports = function Gameboard() {
         : false;
     },
     placeShip(ship, ...coords) {
-      const regex = /^[a-f][1-9]$|^[a-f]10$/g;
       if (ship == undefined || typeof ship !== "object") {
         throw Error("Invalid target ship argument");
-      } else if (coords.every((coord) => regex.test(coord) === true)) {
+      } else if (coords.length === 0) {
+        throw Error("Expected some coordinates");
+      } else if (coordsAreInvalid(coords)) {
         throw Error("Invalid coordinates");
       } else if (ship.length !== coords.length) {
         throw Error("Unexpected number of arguments");
       } else {
-        // assign 1-5 coordinates to each ship depending on their class/length
         for (let i = 0; i < coords.length; i++) {
           ship.parts[i].coordinates = coords[i];
         }
@@ -57,3 +60,25 @@ module.exports = function Gameboard() {
     },
   };
 };
+
+function coordsAreInvalid(coords = []) {
+  const regex = /^[a-j][1-9]$|^[a-j]10$/;
+  // check each coord individually if they do not match regex
+  // if no matches return false
+  return coords.some((coord) => regex.test(coord) == false);
+}
+
+// function coordsAreValid(coords = []) {
+//   const regex = /^[a-j][1-9]$|^[a-j]10$/;
+//   // check each coord individually if they do not match regex
+//   // if no matches return false
+//   return coords.every((coord) => regex.test(coord)) ? true : false;
+// }
+
+// function coordsAreInvalid1(coords) {
+//   const regex = /^[a-j][1-9]$|^[a-j]10$/;
+//   for (let coord of coords) {
+//     if (regex.test(coord) === false) return true;
+//   }
+//   return false;
+// }

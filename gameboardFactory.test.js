@@ -33,6 +33,12 @@ describe("Check Gameboard Factory", () => {
         "Invalid target ship argument"
       );
     });
+    it("Throws no error because valid input (frigate)", () => {
+      const gameboard = Gameboard();
+      expect(() => {
+        gameboard.placeShip(gameboard.ships[4], "f3");
+      }).not.toThrow();
+    });
     it("Throw error if ship.length not equals to coords given", () => {
       const gameboard = Gameboard();
       expect(() =>
@@ -67,17 +73,44 @@ describe("Check Gameboard Factory", () => {
       gameboard.receiveAttack("a1");
       expect(gameboard.ships[1].parts[0].status).toBe("inactive");
     });
-    it("Log attacks to activityLog array", () => {
+    it("Ship status becomes inactive when all parts hit", () => {
+      const gameboard = Gameboard();
+      gameboard.placeShip(gameboard.ships[1], "a1", "a2", "a3", "a4", "a5");
+      gameboard.receiveAttack("a1");
+      gameboard.receiveAttack("a2");
+      gameboard.receiveAttack("a3");
+      gameboard.receiveAttack("a4");
+      gameboard.receiveAttack("a5");
+      expect(gameboard.ships[1].status).toBe("inactive");
+    });
+    describe("Method updates log once", () => {
       const gameboard = Gameboard();
       gameboard.placeShip(gameboard.ships[0], "a1", "a2", "a3", "a4");
       gameboard.receiveAttack("a1");
-      expect(gameboard.activityLog[0]).toBeDefined();
+      it("Push object with prop coord and result to activityLog array", () => {
+        expect(gameboard.activityLog[0]).toStrictEqual({
+          coord: "a1",
+          result: "hit",
+        });
+      });
+      it("Logged only once", () => {
+        expect(gameboard.activityLog.length).toBe(1);
+      });
     });
     it("Coordinates already in activity log cannot receive attack (error)", () => {
       const gameboard = Gameboard();
       gameboard.placeShip(gameboard.ships[0], "a1", "a2", "a3", "a4");
       gameboard.receiveAttack("a1");
       expect(() => gameboard.receiveAttack("a1")).toThrow();
+    });
+    it("Logs destroy when a hit changes ship status to inactive", () => {
+      const gameboard = Gameboard();
+      gameboard.placeShip(gameboard.ships[0], "a1", "a2", "a3", "a4");
+      gameboard.receiveAttack("a1");
+      gameboard.receiveAttack("a2");
+      gameboard.receiveAttack("a3");
+      gameboard.receiveAttack("a4");
+      expect(gameboard.activityLog[3].result).toBe("destroy");
     });
   });
   describe("Gameboard().hasLost method", () => {
@@ -93,6 +126,30 @@ describe("Check Gameboard Factory", () => {
     });
     it("Returns false if ships array has active ships", () => {
       expect(Gameboard().hasLost()).toBe(false);
+    });
+    it("hasLost() returns true since all ships inactive", () => {
+      const gameboard = Gameboard();
+      gameboard.placeShip(gameboard.ships[0], "a1", "a2", "a3", "a4");
+      gameboard.receiveAttack("a1");
+      gameboard.receiveAttack("a2");
+      gameboard.receiveAttack("a3");
+      gameboard.receiveAttack("a4");
+      gameboard.placeShip(gameboard.ships[1], "b1", "b2", "b3", "b4", "b5");
+      gameboard.receiveAttack("b1");
+      gameboard.receiveAttack("b2");
+      gameboard.receiveAttack("b3");
+      gameboard.receiveAttack("b4");
+      gameboard.receiveAttack("b5");
+      gameboard.placeShip(gameboard.ships[2], "c1", "c2", "c3");
+      gameboard.receiveAttack("c1");
+      gameboard.receiveAttack("c2");
+      gameboard.receiveAttack("c3");
+      gameboard.placeShip(gameboard.ships[3], "d1", "d2");
+      gameboard.receiveAttack("d1");
+      gameboard.receiveAttack("d2");
+      gameboard.placeShip(gameboard.ships[4], "e1");
+      gameboard.receiveAttack("e1");
+      expect(gameboard.hasLost()).toBe(true);
     });
   });
   describe("Gameboard().ships property", () => {
