@@ -7,7 +7,7 @@ module.exports = function installPlacementSystem(
     refDocument,
     boardEl,
     boardCells,
-    orientation: "x",
+    orientation: "y",
     mode: "off",
     targetCell: null,
     targetAdjacents: [],
@@ -68,7 +68,7 @@ module.exports = function installPlacementSystem(
         // }
 
         // v1 - works
-        if (placementSystem.orientation === "x") {
+        if (placementSystem.orientation === "y") {
           for (
             let counter = y, excess = null, i = 1;
             i < placementSystem.length;
@@ -83,7 +83,7 @@ module.exports = function installPlacementSystem(
               if (y === 10 || y === 9) {
                 excess = "over";
                 counter = modifiedY = y === 10 ? 9 : 10;
-              } else if (y === 1 || y === 2) {
+              } else if (placementSystem.length > 2 && (y === 1 || y === 2)) {
                 excess = "under";
                 counter = modifiedY = y === 1 ? 2 : 1;
               } else counter = modifiedY;
@@ -124,7 +124,10 @@ module.exports = function installPlacementSystem(
               if (xIndex === 10 || xIndex === 9) {
                 excess = "over";
                 counter = modifiedX = xIndex === 10 ? 9 : 10;
-              } else if (xIndex === 1 || xIndex === 2) {
+              } else if (
+                placementSystem.length > 2 &&
+                (xIndex === 1 || xIndex === 2)
+              ) {
                 excess = "under";
                 if (xIndex === 1) counter = modifiedX = 2;
                 if (xIndex === 2) counter = modifiedX = 1;
