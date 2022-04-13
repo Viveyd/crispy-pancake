@@ -1,0 +1,160 @@
+body {
+  position: relative;
+  margin: 0;
+  height: 100vh;
+  width: 100%;
+  border: 5px solid burlywood;
+}
+
+main {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 1280px;
+  overflow-y: hidden;
+}
+
+.gameboard {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  width: auto;
+  height: auto;
+  min-width: 320px;
+  min-height: 320px;
+  max-width: 700px;
+}
+  .gameboard-rows{
+    display:  flex;
+    flex-grow: 1;
+  }
+  .gameboard-cells{
+    padding: 1%;
+    flex-basis: 0px;
+    flex-grow: 1;
+    border: 1px solid black;
+    text-align: center;
+    user-select: none;
+    
+  }
+
+ /* Controls  */
+
+.control-con {
+  display:  grid;
+  grid-template-columns: 2.5fr 1.5fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 1em;
+  height: 500px;
+}
+.target-display {
+  border: 1px solid black;
+  display: flex;
+  flex-direction: column;
+}
+  .target-display > div:first-child {
+    flex-grow: 0.4;
+    border: 1px solid black;
+  }
+  .target-display > div:not(first-child){
+    flex-grow: 1;
+    border: 1px solid black;
+  }
+
+.fire-place-con {
+  position: relative;
+  top: 7%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding-top: 0.5em;
+  background-color: black;
+  width: 100px;
+  height: 115px;
+}
+  .fire-place-con label{
+    display: block;
+    text-align: center;
+    background-color: white;
+    width: 85%;
+    margin: 0 7.5% 8px 7.5%;
+    border-radius: 1px  ;
+    color: black;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  .fire-place-con button{
+    position: absolute;
+    left: -10px;
+    width: 120px;
+    height:120px;
+    border-radius: 50%;
+    background-color: crimson;  
+    color: white;
+    font-weight: bold;
+  }
+
+#fleet-display{
+  margin: 0;
+  border: 1px solid black;
+  
+}
+  #fleet-display figcaption{
+    font-size: large;
+    font-weight: bold;
+    border: 1px solid black;
+  } 
+  #fleet-display ul{
+    font-size: larger;
+    list-style-type: none;
+    padding-left:  0;
+    margin: 0;
+    overflow-y: scroll;
+    
+  }
+  #fleet-display ul>li{
+    position: relative;
+    border:  1px solid black;
+    height: 75px;
+    width: auto;
+  }
+  #fleet-display ul>li>.ship-name{
+    text-align: center;
+    display: block;
+  }
+  #fleet-display ul>li>.ship-stat{
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    display: block;
+  }
+#log-display{
+  margin: 0;
+  border: 1px solid black;
+  
+}
+  #log-display ol {
+    font-size: larger;
+    list-style-type: none;
+    padding-left:  0;
+    overflow-y: scroll;
+  }
+  #log-display figcaption {
+    font-size: large;
+    font-weight: bold;
+    border: 1px solid black;
+  }
+
+  .place-mode{
+    background-color: lightgreen;
+  }
+
+  .place-mode-selectable:hover{
+    background-color: lightgreen;
+  }
+  
+  .place-mode-selected{
+    background-color: lightgreen;
+  }
